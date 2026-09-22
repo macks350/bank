@@ -184,44 +184,7 @@ if(localStorage.demoDark==='true')document.body.classList.add('dark');
 document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
 </script>
 </body>
-  /* Мост банк ⇄ Неофликс. Подключить в bank/index.html перед </body>:
-   <script src="bank-bridge.js"></script>
-   Кошелёк хранится в localStorage под ключом "demoWallet" и общий для всех
-   страниц на macks350.github.io (банк, Неофликс и любые будущие сайты). */
-(function () {
-  var KEY = 'demoWallet';
 
-  function getW() {
-    try {
-      var w = JSON.parse(localStorage.getItem(KEY));
-      if (w && typeof w.balance === 'number') return w;
-    } catch (e) {}
-    return { balance: 125430, ops: [] };
-  }
-  function setW(w) { localStorage.setItem(KEY, JSON.stringify(w)); }
-
-  // Для остальных скриптов банка: BankBridge.get(), BankBridge.set(число)
-  window.BankBridge = {
-    get: function () { return getW().balance; },
-    set: function (n) { var w = getW(); w.balance = n; setW(w); show(); }
-  };
-
-  function fmt(n) { return Number(n).toLocaleString('ru-RU') + ' ₽'; }
-
-  // Ищем первую сумму вида «125 430 ₽» (операции начинаются с + или −, их не трогаем)
-  function show() {
-    var re = /^\s*\d[\d\s\u00a0\u202f]*₽\s*$/;
-    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-    var n;
-    while ((n = walker.nextNode())) {
-      if (re.test(n.nodeValue)) { n.nodeValue = fmt(getW().balance); return; }
-    }
-  }
-
-  if (!localStorage.getItem(KEY)) setW(getW());
-  document.addEventListener('DOMContentLoaded', show);
-  if (document.readyState !== 'loading') show();
-  window.addEventListener('storage', function (e) { if (e.key === KEY) show(); });
-})();
+  <script src="bank-bridge.js"></script>
   
 </html>
